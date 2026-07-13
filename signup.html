@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Happy Paws Pet Store - Sign Up</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="signupValidation.js"></script>
+</head>
+<body>
+
+<div class="container">
+
+    <div class="left-panel">
+        <h1>🐾 Happy Paws</h1>
+        <span class="store">Pet Supplies Store</span>
+
+        <h2>Create Your Account</h2>
+
+        <p>
+            Join Happy Paws today and shop for the best pet food, toys,
+            grooming products, accessories, and more for your furry friends.
+        </p>
+
+        <div class="features">
+            <div>✔ Premium Pet Products</div>
+            <div>🚚 Fast Home Delivery</div>
+            <div>🐶 Dogs • Cats • Fish • Birds</div>
+        </div>
+    </div>
+
+    <div class="right-panel">
+
+        <div class="form-box">
+
+            <h2>Sign Up</h2>
+
+            <p class="subtitle">
+                Create your Happy Paws account.
+            </p>
+
+            <form action="signup_process.php"
+                  method="POST"
+                  onsubmit="return validateSignup()"
+                  novalidate>
+
+                <label>Email Address</label>
+
+                <input type="email"
+                       id="email"
+                       name="email"
+                       placeholder="you@example.com">
+
+                <span class="error-message" id="email_error"></span>
+
+
+                <label>Username</label>
+
+                <input type="text"
+                       id="username"
+                       name="name"
+                       placeholder="Enter username">
+
+                <span class="error-message" id="username_error"></span>
+
+
+                <label>Password</label>
+
+                <small>
+                    Must be at least 8 characters and include an uppercase letter,
+                    lowercase letter, number, and special character.
+                </small>
+
+                <input type="password"
+                       id="password"
+                       name="password"
+                       placeholder="Enter password">
+
+                <span class="error-message" id="password_error"></span>
+
+
+                <label>Confirm Password</label>
+
+                <input type="password"
+                       id="confirm_Password"
+                       name="confirm_password"
+                       placeholder="Confirm password">
+
+                <span class="error-message" id="confirm_Password_error"></span>
+
+
+                <button type="submit">Create Account</button>
+
+            </form>
+
+            <p class="link-text">
+                Already have an account?
+                <a href="signin.html">Sign In</a>
+            </p>
+
+        </div>
+
+    </div>
+
+</div>
+
+</body>
+</html>

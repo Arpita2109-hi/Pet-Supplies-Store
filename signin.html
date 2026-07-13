@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Happy Paws Pet Store - Sign In</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="signinValidation.js"></script>
+</head>
+<body>
+
+<div class="container">
+
+    <div class="left-panel">
+
+        <h1>🐾 Happy Paws</h1>
+        <span class="store">Pet Supplies Store</span>
+
+        <h2>Welcome Back!</h2>
+
+        <p>
+            Sign in to continue shopping for pet food, toys, grooming products,
+            accessories and manage your orders.
+        </p>
+
+        <div class="features">
+            <div>✔ Track Your Orders</div>
+            <div>🚚 Fast Delivery Updates</div>
+            <div>🐶 Food • Toys • Grooming</div>
+        </div>
+
+    </div>
+
+    <div class="right-panel">
+
+        <div class="form-box">
+
+            <h2>Sign In</h2>
+
+            <p class="subtitle">
+                Welcome back to Happy Paws.
+            </p>
+
+            <p id="registration_message"
+               style="display: none; color: green;">
+                Account created successfully. Please sign in.
+            </p>
+
+            <form action="signin_process.php"
+                  method="POST"
+                  onsubmit="return validateSignin()"
+                  novalidate>
+
+                <label>Email Address</label>
+
+                <input type="email"
+                       id="login_email"
+                       name="email"
+                       placeholder="you@example.com">
+
+                <span class="error-message" id="login_email_error"></span>
+
+
+                <label>Password</label>
+
+                <input type="password"
+                       id="login_password"
+                       name="password"
+                       placeholder="Enter your password">
+
+                <span class="error-message" id="login_password_error"></span>
+
+
+                <button type="submit">Sign In</button>
+
+            </form>
+
+            <p class="link-text">
+                Don't have an account?
+                <a href="signup.html">Create Account</a>
+            </p>
+
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+    let urlParameters = new URLSearchParams(window.location.search);
+
+    if (urlParameters.get("registered") == "1") {
+        document.getElementById("registration_message").style.display =
+            "block";
+    }
+</script>
+
+</body>
+</html>
