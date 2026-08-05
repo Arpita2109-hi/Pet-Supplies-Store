@@ -1,0 +1,259 @@
+* {
+    box-sizing: border-box;
+    font-family: "Times New Roman", Times, serif;
+}
+
+:root {
+    --dark-brown: #38261f;
+    --brown: #5b4034;
+    --cream: #fff8ef;
+    --light-orange: #fff0e4;
+    --peach: #ffe0cf;
+    --orange: #e95d3f;
+    --orange-dark: #c9472f;
+    --white: #ffffff;
+    --blue: #4288c6;
+    --green: #389451;
+    --red: #d95848;
+    --grey: #756761;
+    --border: #e5c1af;
+    --shadow: 0 10px 25px rgba(70, 42, 29, 0.10);
+}
+
+body {
+    margin: 0;
+    background: var(--light-orange);
+    color: var(--dark-brown);
+}
+
+.page-header {
+    padding: 22px 5%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    background: var(--cream);
+    border-bottom: 2px solid var(--dark-brown);
+}
+
+.page-header h1 {
+    margin: 0;
+    color: var(--dark-brown);
+    font-size: 35px;
+}
+
+.page-header p {
+    margin: 7px 0 0;
+    color: var(--brown);
+    font-size: 17px;
+}
+
+.page-header > a {
+    padding: 12px 18px;
+    border-radius: 8px;
+    background: var(--orange);
+    color: var(--white);
+    font-weight: bold;
+    text-decoration: none;
+}
+
+.page-header > a:hover {
+    background: var(--orange-dark);
+}
+
+.container {
+    width: 94%;
+    max-width: 1600px;
+    margin: 30px auto;
+}
+
+.orders-heading {
+    margin-bottom: 22px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+}
+
+.orders-heading h2 {
+    margin: 0;
+    font-size: 29px;
+}
+
+.search-form {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+}
+
+.search-form input {
+    width: 350px;
+    padding: 12px;
+    border: 1px solid #d9b5a3;
+    border-radius: 8px;
+    background: var(--white);
+    font-size: 16px;
+    outline: none;
+}
+
+.search-form input:focus {
+    border-color: var(--orange);
+    box-shadow: 0 0 0 3px rgba(233, 93, 63, 0.10);
+}
+
+.search-form button {
+    padding: 12px 20px;
+    border: none;
+    border-radius: 8px;
+    background: var(--orange);
+    color: var(--white);
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.search-form button:hover {
+    background: var(--orange-dark);
+}
+
+.search-form a {
+    padding: 11px 17px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--cream);
+    color: var(--dark-brown);
+    font-weight: bold;
+    text-decoration: none;
+}
+
+.table-wrapper {
+    overflow-x: auto;
+    border: 1px solid var(--border);
+    border-radius: 15px;
+    background: var(--white);
+    box-shadow: var(--shadow);
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th,
+td {
+    padding: 15px;
+    border-bottom: 1px solid #efdfd7;
+    text-align: left;
+    vertical-align: middle;
+}
+
+th {
+    background: var(--peach);
+    color: var(--dark-brown);
+    font-size: 17px;
+}
+
+tbody tr:hover {
+    background: #fffaf6;
+}
+
+.status {
+    display: inline-block;
+    padding: 7px 12px;
+    border-radius: 999px;
+    font-weight: bold;
+    text-transform: capitalize;
+}
+
+.pending {
+    background: #fff0bd;
+    color: #806000;
+}
+
+.processing {
+    background: #dcecff;
+    color: #245e95;
+}
+
+.completed {
+    background: #ddf3df;
+    color: #287136;
+}
+
+.rejected {
+    background: #ffdfdc;
+    color: #a62f29;
+}
+
+.actions {
+    min-width: 300px;
+}
+
+.process-button,
+.complete-button,
+.reject-button,
+.delete-button {
+    display: inline-block;
+    margin: 3px;
+    padding: 8px 11px;
+    border-radius: 7px;
+    color: var(--white);
+    font-weight: bold;
+    text-decoration: none;
+}
+
+.process-button {
+    background: var(--blue);
+}
+
+.complete-button {
+    background: var(--green);
+}
+
+.reject-button {
+    background: var(--red);
+}
+
+.delete-button {
+    background: var(--grey);
+}
+
+.process-button:hover,
+.complete-button:hover,
+.reject-button:hover,
+.delete-button:hover {
+    opacity: 0.85;
+}
+
+.success-message {
+    padding: 13px 16px;
+    border: 1px solid #a8d8b1;
+    border-radius: 8px;
+    background: #e6f7e9;
+    color: #256a34;
+    font-weight: bold;
+}
+
+.empty-message {
+    padding: 40px;
+    color: var(--brown);
+    text-align: center;
+}
+
+@media (max-width: 800px) {
+    .page-header,
+    .orders-heading {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .search-form {
+        width: 100%;
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .search-form input {
+        width: 100%;
+    }
+}

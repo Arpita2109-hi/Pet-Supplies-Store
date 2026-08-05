@@ -1,0 +1,120 @@
+@import url("https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Pacifico&display=swap");
+
+.admin-main-header {
+    min-height: 112px;
+    padding: 16px 55px;
+    display: grid;
+    grid-template-columns: minmax(260px, 1fr) minmax(360px, 520px) minmax(190px, 1fr);
+    align-items: center;
+    gap: 32px;
+    background: #ffffff;
+    border-bottom: 1px solid #ead6ca;
+    box-shadow: 0 4px 15px rgba(70, 42, 29, 0.08);
+    position: relative;
+    z-index: 10;
+}
+
+.admin-logo {
+    display: inline-flex;
+    align-items: center;
+    gap: 14px;
+    justify-self: start;
+    color: #e95d3f;
+    text-decoration: none;
+}
+
+.logo-paws {
+    color: #3b2550;
+    font-size: 35px;
+    line-height: 1;
+}
+
+.logo-name {
+    font-family: "Pacifico", cursive;
+    font-size: 34px;
+    font-weight: 400;
+    color: #e95d3f;
+    white-space: nowrap;
+}
+
+.admin-header-center {
+    width: 100%;
+    min-height: 72px;
+    padding: 16px 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    justify-self: center;
+    border-radius: 15px;
+    background: linear-gradient(135deg, #e95d3f, #ef7659);
+    box-shadow: 0 8px 20px rgba(233, 93, 63, 0.25);
+}
+
+.admin-header-center h1 {
+    margin: 0;
+    color: #ffffff;
+    font-family: "DM Sans", sans-serif;
+    font-size: clamp(27px, 2.4vw, 38px);
+    font-weight: 700;
+    line-height: 1.15;
+    text-align: center;
+}
+
+.header-action-button {
+    min-width: 170px;
+    padding: 14px 22px;
+    justify-self: end;
+    border: 2px solid #e95d3f;
+    border-radius: 10px;
+    background: #e95d3f;
+    color: #ffffff;
+    font-family: "DM Sans", sans-serif;
+    font-weight: 700;
+    text-align: center;
+    text-decoration: none;
+    transition: 0.2s ease;
+}
+
+.header-action-button:hover {
+    background: #d94e31;
+    border-color: #d94e31;
+    transform: translateY(-1px);
+}
+
+@media (max-width: 900px) {
+    .admin-main-header {
+        padding: 16px 25px;
+        grid-template-columns: 1fr auto;
+        gap: 16px;
+    }
+
+    .admin-header-center {
+        grid-column: 1 / -1;
+        grid-row: 2;
+        max-width: none;
+    }
+
+    .header-action-button {
+        min-width: 150px;
+    }
+}
+
+@media (max-width: 560px) {
+    .admin-main-header {
+        padding: 15px;
+        grid-template-columns: 1fr;
+    }
+
+    .admin-logo,
+    .header-action-button {
+        justify-self: center;
+    }
+
+    .logo-name {
+        font-size: 29px;
+    }
+
+    .header-action-button {
+        width: 100%;
+    }
+}
