@@ -899,3 +899,35 @@ img {
         grid-template-columns: 1fr;
     }
 }
+.pagination{
+    margin-top:30px;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    gap:8px;
+    flex-wrap:wrap;
+}
+
+.pagination a{
+    min-width:42px;
+    padding:11px 15px;
+    border:1px solid #e7c5b6;
+    border-radius:9px;
+    background:#fff;
+    color:#4b3026;
+    text-align:center;
+    text-decoration:none;
+    font-weight:700;
+    transition:.2s;
+}
+
+.pagination a:hover,
+.pagination a.active{
+    background:#e95d3f;
+    border-color:#e95d3f;
+    color:#fff;
+}
+
+.pagination a.active{
+    pointer-events:none;
+}
