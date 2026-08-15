@@ -13,8 +13,12 @@ if(($_SESSION["role"]??"")==="admin"&&!$isAdminPreview){
     header("Location: admin-dashboard.php");
     exit();
 }
-
+$userId=(int)$_SESSION["user_id"];
 $search=trim($_GET["search"]??"");
+if(($_SESSION["role"]??"")==="admin"&&!$isAdminPreview){
+    header("Location: admin-dashboard.php");
+    exit();
+}
 $category=trim($_GET["category"]??"");
 $page=max(1,(int)($_GET["page"]??1));
 $productsPerPage=6;
@@ -81,6 +85,17 @@ $categoriesResult=mysqli_query(
     FROM products
     ORDER BY category"
 );
+$wishlistIds=[];
+if(!$isAdminPreview){
+    $wishlistStmt=mysqli_prepare($conn,"SELECT product_id FROM wishlist WHERE user_id=?");
+    mysqli_stmt_bind_param($wishlistStmt,"i",$userId);
+    mysqli_stmt_execute($wishlistStmt);
+    $wishlistResult=mysqli_stmt_get_result($wishlistStmt);
+    while($wishlistRow=mysqli_fetch_assoc($wishlistResult)){
+        $wishlistIds[]=(int)$wishlistRow["product_id"];
+    }
+}
+$wishlistCount=count($wishlistIds);
 
 function pageUrl(int $page,string $search,string $category,bool $preview=false):string{
     $query=["page"=>$page];
@@ -100,8 +115,9 @@ function pageUrl(int $page,string $search,string $category,bool $preview=false):
     return "dashboard.php?".http_build_query($query)."#products";
 }
 
-function productCard(array $product,string $prefix="product"):void{
+function productCard(array $product,string $prefix="product",array $wishlistIds=[]):void{
     $id=(int)$product["id"];
+    $inWishlist=in_array($id,$wishlistIds);
     $name=htmlspecialchars($product["name"]);
     $description=htmlspecialchars($product["description"]??"");
     $image=htmlspecialchars($product["image"]);
@@ -124,15 +140,21 @@ function productCard(array $product,string $prefix="product"):void{
         <label for="<?= $prefix ?>_quantity_<?= $id ?>">
             Quantity
         </label>
+       <div class="product-actions">
+       <input
+        type="number"
+        id="<?= $prefix ?>_quantity_<?= $id ?>"
+        min="1"
+        value="1">
 
-        <input
-            type="number"
-            id="<?= $prefix ?>_quantity_<?= $id ?>"
-            min="1"
-            value="1"
-        >
+       <?php if(($_SESSION["role"]??"")!=="admin"): ?>
+       <button type="button" class="wishlist-button <?= $inWishlist?"active":"" ?>" data-product-id="<?= $id ?>" title="<?= $inWishlist?"Remove from wishlist":"Add to wishlist" ?>">
+            <?= $inWishlist?"♥":"♡" ?>
+       </button>
+       <?php endif; ?>
 
-        <button type="button">Add to Cart</button>
+    <button type="button" class="cart-button">Add to Cart</button>
+</div>
     </div>
 </article>
 <?php
@@ -188,6 +210,9 @@ function productCard(array $product,string $prefix="product"):void{
             </a>
 
             <a href="logout.php">Logout</a>
+            <?php if(!$isAdminPreview): ?>
+                <a href="wishlist_dashboard.php" class="wishlist-link">Wishlist (<span class="wishlist-count"><?= $wishlistCount ?></span>)</a>
+            <?php endif; ?>
             <a href="#" class="cart-link">Cart</a>
             <a href="#" class="checkout-link">Checkout</a>
         </nav>
@@ -295,7 +320,7 @@ function productCard(array $product,string $prefix="product"):void{
                     <?php while(
                         $product=mysqli_fetch_assoc($featuredResult)
                     ): ?>
-                        <?php productCard($product,"featured"); ?>
+                        <?php productCard($product,"featured",$wishlistIds); ?>
                     <?php endwhile; ?>
 
                 <?php else: ?>
@@ -330,7 +355,7 @@ function productCard(array $product,string $prefix="product"):void{
                     <?php while(
                         $product=mysqli_fetch_assoc($products)
                     ): ?>
-                        <?php productCard($product); ?>
+                        <?php productCard($product,"product",$wishlistIds); ?>
                     <?php endwhile; ?>
 
                 <?php else: ?>
@@ -468,6 +493,46 @@ function productCard(array $product,string $prefix="product"):void{
         </p>
     </div>
 </footer>
+
+
+<script>
+document.addEventListener("click",function(e){
+    const button=e.target.closest(".wishlist-button");
+    if(!button)return;
+    const productId=button.dataset.productId;
+    button.disabled=true;
+    fetch("wishlist.php",{
+        method:"POST",
+        headers:{"Content-Type":"application/x-www-form-urlencoded"},
+        body:"product_id="+encodeURIComponent(productId)
+    })
+    .then(response=>response.json())
+    .then(data=>{
+        if(!data.success){
+            alert(data.message||"Wishlist could not be updated.");
+            return;
+        }
+        if(data.inWishlist){
+            button.textContent="♥";
+            button.classList.add("active");
+            button.title="Remove from wishlist";
+        }else{
+            button.textContent="♡";
+            button.classList.remove("active");
+            button.title="Add to wishlist";
+        }
+        document.querySelectorAll(".wishlist-button[data-product-id='"+productId+"']").forEach(btn=>{
+            btn.textContent=data.inWishlist?"♥":"♡";
+            btn.classList.toggle("active",data.inWishlist);
+            btn.title=data.inWishlist?"Remove from wishlist":"Add to wishlist";
+        });
+        const count=document.querySelector(".wishlist-count");
+        if(count)count.textContent=data.count;
+    })
+    .catch(()=>alert("Wishlist could not be updated."))
+    .finally(()=>button.disabled=false);
+});
+</script>
 
 </body>
 </html>

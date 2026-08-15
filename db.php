@@ -26,7 +26,6 @@ if (!mysqli_query($conn, $createProductsTable)) {
     die("Could not create products table: " . mysqli_error($conn));
 }
 
-// Put the old hard-coded home-page products into MySQL once.
 $countResult = mysqli_query($conn, "SELECT COUNT(*) AS total FROM products");
 $countRow = $countResult ? mysqli_fetch_assoc($countResult) : ["total" => 0];
 
