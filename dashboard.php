@@ -1,6 +1,7 @@
 <?php
 session_start();
 require_once "db.php";
+require_once "cart_helpers.php";
 
 if(!isset($_SESSION["user_id"])){
     header("Location: signin.html");
@@ -96,6 +97,7 @@ if(!$isAdminPreview){
     }
 }
 $wishlistCount=count($wishlistIds);
+$cartItemCount=$isAdminPreview?0:cartCount();
 
 function pageUrl(int $page,string $search,string $category,bool $preview=false):string{
     $query=["page"=>$page];
@@ -153,7 +155,7 @@ function productCard(array $product,string $prefix="product",array $wishlistIds=
        </button>
        <?php endif; ?>
 
-    <button type="button" class="cart-button">Add to Cart</button>
+    <button type="button" class="cart-button" data-product-id="<?= $id ?>" data-quantity-id="<?= $prefix ?>_quantity_<?= $id ?>">Add to Cart</button>
 </div>
     </div>
 </article>
@@ -213,8 +215,8 @@ function productCard(array $product,string $prefix="product",array $wishlistIds=
             <?php if(!$isAdminPreview): ?>
                 <a href="wishlist_dashboard.php" class="wishlist-link">Wishlist (<span class="wishlist-count"><?= $wishlistCount ?></span>)</a>
             <?php endif; ?>
-            <a href="#" class="cart-link">Cart</a>
-            <a href="#" class="checkout-link">Checkout</a>
+            <a href="<?= $isAdminPreview?'#':'cart.php' ?>" class="cart-link">Cart<?php if(!$isAdminPreview): ?> (<span class="cart-header-count"><?= $cartItemCount ?></span>)<?php endif; ?></a>
+            <a href="<?= $isAdminPreview?'#':'checkout.php' ?>" class="checkout-link">Checkout</a>
         </nav>
     </div>
 
@@ -497,6 +499,19 @@ function productCard(array $product,string $prefix="product",array $wishlistIds=
 
 <script>
 document.addEventListener("click",function(e){
+    const cartButton=e.target.closest(".cart-button");
+    if(cartButton){
+        const quantityInput=document.getElementById(cartButton.dataset.quantityId);
+        const quantity=Math.max(1,parseInt(quantityInput?.value||"1",10));
+        const form=document.createElement("form");
+        form.method="POST";
+        form.action="cart_action.php";
+        form.innerHTML='<input type="hidden" name="action" value="add"><input type="hidden" name="product_id" value="'+cartButton.dataset.productId+'"><input type="hidden" name="quantity" value="'+quantity+'"><input type="hidden" name="redirect" value="cart.php">';
+        document.body.appendChild(form);
+        form.submit();
+        return;
+    }
+
     const button=e.target.closest(".wishlist-button");
     if(!button)return;
     const productId=button.dataset.productId;

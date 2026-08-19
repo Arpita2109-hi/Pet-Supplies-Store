@@ -1,6 +1,7 @@
 <?php
 session_start();
 require_once "db.php";
+require_once "cart_helpers.php";
 if(!isset($_SESSION["user_id"])){
     header("Location: signin.html");
     exit();
@@ -19,6 +20,7 @@ mysqli_stmt_bind_param($stmt,"i",$userId);
 mysqli_stmt_execute($stmt);
 $wishlistProducts=mysqli_stmt_get_result($stmt);
 $wishlistCount=mysqli_num_rows($wishlistProducts);
+$cartItemCount=cartCount();
 $categories=mysqli_query($conn,"SELECT DISTINCT category FROM products ORDER BY category");
 ?>
 <!DOCTYPE html>
@@ -50,8 +52,8 @@ $categories=mysqli_query($conn,"SELECT DISTINCT category FROM products ORDER BY 
 <a href="wishlist_dashboard.php" class="wishlist-link">
 Wishlist (<span class="wishlist-count"><?= $wishlistCount ?></span>)
 </a>
-<a href="#" class="cart-link">Cart</a>
-<a href="#" class="checkout-link">Checkout</a>
+<a href="cart.php" class="cart-link">Cart (<span class="cart-header-count"><?= $cartItemCount ?></span>)</a>
+<a href="checkout.php" class="checkout-link">Checkout</a>
 </nav>
 
 </div>
@@ -122,9 +124,13 @@ Rs. <?= number_format((float)$product["price"],2) ?>
 Remove from Wishlist
 </a>
 
-<a href="#" class="wishlist-checkout">
-<span class="wishlist-cart-icon">🛒</span> Cart
-</a>
+<form method="post" action="cart_action.php" class="wishlist-cart-form">
+<input type="hidden" name="action" value="add">
+<input type="hidden" name="product_id" value="<?= (int)$product["id"] ?>">
+<input type="hidden" name="quantity" value="1">
+<input type="hidden" name="redirect" value="cart.php">
+<button type="submit" class="wishlist-checkout"><span class="wishlist-cart-icon">🛒</span> Add to Cart</button>
+</form>
 </div>
 
 </div>

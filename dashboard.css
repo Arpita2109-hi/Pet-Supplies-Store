@@ -1048,4 +1048,4 @@ img {
 }
 .wishlist-cart-icon{
     filter:grayscale(1) brightness(0);
-}
+}.wishlist-cart-form{margin:0}.wishlist-cart-form .wishlist-checkout{cursor:pointer;font:inherit;font-weight:700}.cart-header-count{font-weight:700}
