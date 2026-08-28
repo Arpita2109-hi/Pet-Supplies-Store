@@ -499,18 +499,51 @@ function productCard(array $product,string $prefix="product",array $wishlistIds=
 
 <script>
 document.addEventListener("click",function(e){
-    const cartButton=e.target.closest(".cart-button");
-    if(cartButton){
-        const quantityInput=document.getElementById(cartButton.dataset.quantityId);
-        const quantity=Math.max(1,parseInt(quantityInput?.value||"1",10));
-        const form=document.createElement("form");
-        form.method="POST";
-        form.action="cart_action.php";
-        form.innerHTML='<input type="hidden" name="action" value="add"><input type="hidden" name="product_id" value="'+cartButton.dataset.productId+'"><input type="hidden" name="quantity" value="'+quantity+'"><input type="hidden" name="redirect" value="cart.php">';
-        document.body.appendChild(form);
-        form.submit();
-        return;
-    }
+   const cartButton=e.target.closest(".cart-button");
+
+if(cartButton){
+    const quantityInput=document.getElementById(cartButton.dataset.quantityId);
+    const quantity=Math.max(1,parseInt(quantityInput?.value||"1",10));
+
+    cartButton.disabled=true;
+
+    fetch("cart_action.php",{
+        method:"POST",
+        headers:{
+            "Content-Type":"application/x-www-form-urlencoded"
+        },
+        body:
+            "action=add"+
+            "&product_id="+encodeURIComponent(cartButton.dataset.productId)+
+            "&quantity="+encodeURIComponent(quantity)+
+            "&ajax=1"
+    })
+    .then(response=>response.json())
+    .then(data=>{
+        if(data.success){
+            const cartCount=document.querySelector(".cart-header-count");
+
+            if(cartCount){
+                cartCount.textContent=data.cartCount;
+            }
+
+            const oldText=cartButton.textContent;
+            cartButton.textContent="Added ✓";
+
+            setTimeout(()=>{
+                cartButton.textContent=oldText;
+            },1000);
+        }
+    })
+    .catch(error=>{
+        console.error("Cart error:",error);
+    })
+    .finally(()=>{
+        cartButton.disabled=false;
+    });
+
+    return;
+}
 
     const button=e.target.closest(".wishlist-button");
     if(!button)return;

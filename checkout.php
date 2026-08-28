@@ -93,9 +93,61 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 $discount = promoDiscount($subtotal, $promoCode);
 $itemCount = cartCount();
+$userId = (int)$_SESSION['user_id'];
+$wishlistCount = 0;
+$wishlistStmt = mysqli_prepare($conn, "SELECT COUNT(*) AS total FROM wishlist WHERE user_id=?");
+mysqli_stmt_bind_param($wishlistStmt, "i", $userId);
+mysqli_stmt_execute($wishlistStmt);
+$wishlistResult = mysqli_stmt_get_result($wishlistStmt);
+if ($wishlistRow = mysqli_fetch_assoc($wishlistResult)) {
+    $wishlistCount = (int)$wishlistRow['total'];
+}
 ?>
-<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>Checkout - Happy Paws</title><link rel="stylesheet" href="customer-commerce.css?v=1"></head><body>
-<header class="commerce-header"><div class="commerce-header-inner"><a class="commerce-logo" href="dashboard.php"><span>🐾</span> Happy Paws</a><nav class="commerce-nav"><a href="dashboard.php">Shop</a><a href="wishlist_dashboard.php">Wishlist</a><a href="cart.php">Cart <span class="count-pill"><?= $itemCount ?></span></a><a class="active" href="checkout.php">Checkout</a><a href="logout.php">Logout</a></nav></div></header>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout - Happy Paws</title>
+    <link rel="stylesheet" href="dashboard.css?v=2">
+    <link rel="stylesheet" href="customer-commerce.css?v=12">
+</head>
+<body>
+<header class="main-header">
+    <div class="top-header">
+        <a href="dashboard.php" class="logo">
+            <span class="logo-icon">🐾</span>
+            <span class="logo-text">Happy Paws</span>
+        </a>
+
+        <form class="search-box" method="get" action="dashboard.php">
+            <input
+                name="search"
+                type="search"
+                placeholder="Search food, toys, grooming products..."
+            >
+            <button type="submit">Search</button>
+        </form>
+
+        <nav class="account-navigation">
+            <a href="#">Hi, <?= htmlspecialchars($_SESSION["name"] ?? "Customer") ?></a>
+            <a href="logout.php">Logout</a>
+            <a href="wishlist_dashboard.php" class="wishlist-link">Wishlist (<span class="wishlist-count"><?= $wishlistCount ?></span>)</a>
+            <a href="cart.php" class="cart-link">Cart (<span class="cart-header-count"><?= $itemCount ?></span>)</a>
+            <a href="checkout.php" class="checkout-link">Checkout</a>
+        </nav>
+    </div>
+
+    <div class="bottom-header">
+        <nav class="main-navigation">
+            <a href="dashboard.php">Shop</a>
+            <a href="wishlist_dashboard.php">Wishlist</a>
+            <a href="cart.php">Cart</a>
+            <a href="checkout.php" class="active-link">Checkout</a>
+        </nav>
+    </div>
+</header>
+
 <main class="commerce-shell"><h1 class="page-title">Checkout</h1><p class="page-subtitle">Choose how you want to receive and pay for your order.</p>
 <?php if ($message): ?><div class="message <?= $messageType ?>"><?= htmlspecialchars($message) ?></div><?php endif; ?>
 <form method="post" id="checkoutForm"><div class="checkout-layout"><div>

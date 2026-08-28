@@ -47,6 +47,16 @@ switch ($action) {
         unset($_SESSION['cart'][$productId]);
         break;
 }
+if (isset($_POST['ajax']) && $_POST['ajax'] == '1') {
+    header('Content-Type: application/json');
+
+    echo json_encode([
+        'success' => true,
+        'cartCount' => cartCount()
+    ]);
+
+    exit();
+}
 
 $redirect = $_POST['redirect'] ?? 'cart.php';
 if (!in_array($redirect, ['cart.php', 'wishlist_dashboard.php', 'dashboard.php'], true)) {

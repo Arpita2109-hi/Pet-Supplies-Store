@@ -124,12 +124,23 @@ Rs. <?= number_format((float)$product["price"],2) ?>
 Remove from Wishlist
 </a>
 
-<form method="post" action="cart_action.php" class="wishlist-cart-form">
-<input type="hidden" name="action" value="add">
-<input type="hidden" name="product_id" value="<?= (int)$product["id"] ?>">
-<input type="hidden" name="quantity" value="1">
-<input type="hidden" name="redirect" value="cart.php">
-<button type="submit" class="wishlist-checkout"><span class="wishlist-cart-icon">🛒</span> Add to Cart</button>
+<form class="wishlist-cart-form">
+
+<input
+    type="hidden"
+    name="product_id"
+    value="<?= (int)$product["id"] ?>"
+>
+
+<button
+    type="submit"
+    class="wishlist-checkout"
+>
+
+    Add to Cart
+
+</button>
+
 </form>
 </div>
 
@@ -156,6 +167,90 @@ Remove from Wishlist
 </div>
 
 </main>
+<script>
 
+document.querySelectorAll(".wishlist-cart-form").forEach(function(form) {
+
+    form.addEventListener("submit", function(e) {
+
+        e.preventDefault();
+
+        const button = form.querySelector(".wishlist-checkout");
+
+        const productId = form.querySelector(
+            'input[name="product_id"]'
+        ).value;
+
+
+        button.disabled = true;
+
+
+        fetch("cart_action.php", {
+
+            method: "POST",
+
+            headers: {
+                "Content-Type": "application/x-www-form-urlencoded"
+            },
+
+            body:
+                "action=add" +
+                "&product_id=" + encodeURIComponent(productId) +
+                "&quantity=1" +
+                "&ajax=1"
+
+        })
+
+        .then(response => response.json())
+
+        .then(data => {
+
+            if (data.success) {
+
+                const cartCount = document.querySelector(
+                    ".cart-header-count"
+                );
+
+
+                if (cartCount) {
+
+                    cartCount.textContent = data.cartCount;
+
+                }
+
+
+                const oldText = button.innerHTML;
+
+
+                button.innerHTML = "✓ Added to Cart";
+
+
+                setTimeout(function() {
+
+                    button.innerHTML = oldText;
+
+                }, 1200);
+
+            }
+
+        })
+
+        .catch(function(error) {
+
+            console.error("Cart error:", error);
+
+        })
+
+        .finally(function() {
+
+            button.disabled = false;
+
+        });
+
+    });
+
+});
+
+</script>
 </body>
 </html>
