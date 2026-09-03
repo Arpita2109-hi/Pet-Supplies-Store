@@ -1,8 +1,8 @@
 <?php
-$servername = "localhost";
-$username = "root";
-$password = "";
-$database = "userdetails"; 
+$servername = "sql113.infinityfree.com";
+$username = "if0_42818403";
+$password = "Tobi0921";
+$database = "if0_42818403_happypaws";
 
 $conn = mysqli_connect($servername, $username, $password, $database);
 if (!$conn) {
