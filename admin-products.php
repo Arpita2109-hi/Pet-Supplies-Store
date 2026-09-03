@@ -19,6 +19,66 @@ if (!in_array($view, ["list", "add", "edit"], true)) {
     $view = "list";
 }
 
+function saveProductImage(array $file, string &$error): ?string
+{
+    if (($file["error"] ?? UPLOAD_ERR_NO_FILE) === UPLOAD_ERR_NO_FILE) {
+        return null;
+    }
+
+    if (($file["error"] ?? UPLOAD_ERR_OK) !== UPLOAD_ERR_OK) {
+        $error = "Image upload failed. Please choose the image again.";
+        return null;
+    }
+
+    if (($file["size"] ?? 0) > 5 * 1024 * 1024) {
+        $error = "Image is too large. Maximum size is 5 MB.";
+        return null;
+    }
+
+    $imageInfo = @getimagesize($file["tmp_name"]);
+    $mime = $imageInfo["mime"] ?? "";
+
+    $allowedTypes = [
+        "image/jpeg" => "jpg",
+        "image/png" => "png",
+        "image/webp" => "webp",
+    ];
+
+    if (!isset($allowedTypes[$mime])) {
+        $error = "Please upload a real JPG, JPEG, PNG, or WEBP image.";
+        return null;
+    }
+
+    $uploadDirectory = __DIR__ . DIRECTORY_SEPARATOR . "images";
+
+    if (!is_dir($uploadDirectory) && !mkdir($uploadDirectory, 0755, true)) {
+        $error = "Could not create the images folder on the server.";
+        return null;
+    }
+
+    if (!is_writable($uploadDirectory)) {
+        $error = "The images folder is not writable on the server.";
+        return null;
+    }
+
+    try {
+        $randomName = bin2hex(random_bytes(8));
+    } catch (Throwable $e) {
+        $randomName = uniqid("product_", true);
+    }
+
+    $extension = $allowedTypes[$mime];
+    $fileName = "product_" . preg_replace('/[^a-zA-Z0-9_-]/', '', $randomName) . "." . $extension;
+    $destination = $uploadDirectory . DIRECTORY_SEPARATOR . $fileName;
+
+    if (!move_uploaded_file($file["tmp_name"], $destination)) {
+        $error = "Could not save the image on the server.";
+        return null;
+    }
+
+    return "images/" . $fileName;
+}
+
 if (isset($_GET["delete"])) {
     $productId = (int) $_GET["delete"];
 
@@ -70,18 +130,29 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $name = trim($_POST["name"] ?? "");
     $category = trim($_POST["category"] ?? "");
     $price = (float) ($_POST["price"] ?? 0);
-    $image = trim($_POST["image"] ?? "");
     $description = trim($_POST["description"] ?? "");
     $featured = isset($_POST["featured"]) ? 1 : 0;
+    $existingImage = trim($_POST["existing_image"] ?? "");
+
+    $uploadedImage = saveProductImage($_FILES["image"] ?? [], $error);
+    $image = $uploadedImage ?? $existingImage;
 
     if (
         $name === "" ||
         $category === "" ||
         $price <= 0 ||
-        $image === ""
+        ($productId === 0 && $image === "")
     ) {
-        $error = "Please complete all required fields.";
+        if ($error === "") {
+            $error = "Please complete all required fields and choose a product image.";
+        }
 
+        if ($productId > 0) {
+            $view = "edit";
+        } else {
+            $view = "add";
+        }
+    } elseif ($error !== "") {
         if ($productId > 0) {
             $view = "edit";
         } else {
@@ -273,12 +344,22 @@ include "admin-header.php";
                 </p>
             <?php endif; ?>
 
-            <form method="POST">
+            <form method="POST" enctype="multipart/form-data">
                 <input
                     type="hidden"
                     name="product_id"
                     value="<?php
                     echo (int) ($editingProduct["id"] ?? 0);
+                    ?>"
+                >
+
+                <input
+                    type="hidden"
+                    name="existing_image"
+                    value="<?php
+                    echo htmlspecialchars(
+                        $editingProduct["image"] ?? ""
+                    );
                     ?>"
                 >
 
@@ -349,23 +430,26 @@ include "admin-header.php";
 
                     <div class="form-group">
                         <label for="image">
-                            Image Path
+                            Product Image
                         </label>
 
                         <input
-                            type="text"
+                            type="file"
                             id="image"
                             name="image"
-                            required
-                            placeholder="images/fish-food.jpg"
-                            value="<?php
-                            echo htmlspecialchars(
-                                $editingProduct["image"] ??
-                                $_POST["image"] ??
-                                ""
-                            );
-                            ?>"
+                            accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp"
+                            <?php echo $view === "add" ? "required" : ""; ?>
                         >
+
+                        <?php if ($view === "edit" && !empty($editingProduct["image"])): ?>
+                            <small>
+                                Leave this empty to keep the current image.
+                            </small>
+                        <?php else: ?>
+                            <small>
+                                Choose a JPG, JPEG, PNG, or WEBP image (maximum 5 MB).
+                            </small>
+                        <?php endif; ?>
                     </div>
 
                     <div class="form-group full-width">
