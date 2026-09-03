@@ -184,6 +184,7 @@ include "admin-header.php";
                     <th>Email</th>
                     <th>Total</th>
                     <th>Status</th>
+                    <th>Payment</th>
                     <th>Order Date</th>
                     <th>Actions</th>
                 </tr>

@@ -59,6 +59,7 @@ if ($wishlistRow = mysqli_fetch_assoc($wishlistResult)) {
             <a href="wishlist_dashboard.php" class="wishlist-link">Wishlist (<span class="wishlist-count"><?= $wishlistCount ?></span>)</a>
             <a href="cart.php" class="cart-link">Cart (<span class="cart-header-count"><?= $itemCount ?></span>)</a>
             <a href="checkout.php" class="checkout-link">Checkout</a>
+            <a href="transaction_history.php" class="transaction-link">My Purchases</a>
         </nav>
     </div>
 
@@ -68,6 +69,7 @@ if ($wishlistRow = mysqli_fetch_assoc($wishlistResult)) {
             <a href="wishlist_dashboard.php">Wishlist</a>
             <a href="cart.php" class="active-link">Cart</a>
             <a href="checkout.php">Checkout</a>
+            <a href="transaction_history.php">My Purchases</a>
         </nav>
     </div>
 </header>

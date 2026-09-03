@@ -79,7 +79,7 @@ $createOrdersTable = "CREATE TABLE IF NOT EXISTS orders (
     phone VARCHAR(40) NULL,
     fulfilment_method VARCHAR(20) NOT NULL DEFAULT 'delivery',
     delivery_address VARCHAR(255) NULL,
-    payment_method VARCHAR(30) NOT NULL DEFAULT 'cod',
+    payment_method VARCHAR(30) NOT NULL DEFAULT 'bank',
     promo_code VARCHAR(50) NULL,
     discount DECIMAL(10,2) NOT NULL DEFAULT 0,
     shipping_fee DECIMAL(10,2) NOT NULL DEFAULT 0,
@@ -103,10 +103,44 @@ addColumnIfMissing($conn, 'orders', 'user_id', 'INT NULL');
 addColumnIfMissing($conn, 'orders', 'phone', 'VARCHAR(40) NULL');
 addColumnIfMissing($conn, 'orders', 'fulfilment_method', "VARCHAR(20) NOT NULL DEFAULT 'delivery'");
 addColumnIfMissing($conn, 'orders', 'delivery_address', 'VARCHAR(255) NULL');
-addColumnIfMissing($conn, 'orders', 'payment_method', "VARCHAR(30) NOT NULL DEFAULT 'cod'");
+addColumnIfMissing($conn, 'orders', 'payment_method', "VARCHAR(30) NOT NULL DEFAULT 'bank'");
 addColumnIfMissing($conn, 'orders', 'promo_code', 'VARCHAR(50) NULL');
 addColumnIfMissing($conn, 'orders', 'discount', 'DECIMAL(10,2) NOT NULL DEFAULT 0');
 addColumnIfMissing($conn, 'orders', 'shipping_fee', 'DECIMAL(10,2) NOT NULL DEFAULT 0');
+
+addColumnIfMissing($conn, 'orders', 'payment_status', "VARCHAR(20) NOT NULL DEFAULT 'pending'");
+addColumnIfMissing($conn, 'orders', 'transaction_id', 'INT NULL');
+
+// Demo banking tables used by the digital-only checkout.
+$createBankAccountsTable = "CREATE TABLE IF NOT EXISTS bank_accounts (
+    account_id INT AUTO_INCREMENT PRIMARY KEY,
+    account_number VARCHAR(20) NOT NULL UNIQUE,
+    account_name VARCHAR(100) NOT NULL,
+    balance DECIMAL(15,2) NOT NULL DEFAULT 0.00,
+    pin_hash VARCHAR(255) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
+if (!mysqli_query($conn, $createBankAccountsTable)) {
+    die("Could not create bank_accounts table: " . mysqli_error($conn));
+}
+
+$createBankTransactionsTable = "CREATE TABLE IF NOT EXISTS bank_transactions (
+    transaction_id INT AUTO_INCREMENT PRIMARY KEY,
+    account_id INT NOT NULL,
+    order_id INT NULL,
+    transaction_type VARCHAR(20) NOT NULL,
+    amount DECIMAL(12,2) NOT NULL,
+    balance_after DECIMAL(15,2) NOT NULL,
+    description VARCHAR(255) NULL,
+    status VARCHAR(20) NOT NULL DEFAULT 'successful',
+    transaction_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    INDEX (account_id),
+    INDEX (order_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
+if (!mysqli_query($conn, $createBankTransactionsTable)) {
+    die("Could not create bank_transactions table: " . mysqli_error($conn));
+}
+
 
 $createOrderItemsTable = "CREATE TABLE IF NOT EXISTS order_items (
     id INT AUTO_INCREMENT PRIMARY KEY,

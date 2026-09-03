@@ -1,0 +1,36 @@
+HAPPY PAWS - DIGITAL BANKING DEMO
+
+What was changed:
+- Cash on Delivery was removed from checkout.
+- Fake card checkout was removed.
+- Checkout now uses Happy Paws Bank only.
+- bank_payment.php verifies account number + 4-digit PIN.
+- Successful payment deducts the amount from bank_accounts.balance.
+- Every payment attempt is stored in bank_transactions.
+- orders.payment_status becomes 'paid' after successful payment.
+- orders.transaction_id stores the successful bank transaction ID.
+- transaction_history.php shows the logged-in customer's bank payment history.
+- Admin Manage Orders now shows payment status and transaction ID.
+
+Database expected:
+- bank_accounts
+- bank_transactions
+- orders with payment_status and transaction_id columns
+
+Current demo account from your phpMyAdmin screenshots:
+Account number: HP10001
+PIN: 1234
+
+IMPORTANT ABOUT THE PIN:
+If pin_hash currently contains plain 1234, the payment code accepts it for the demo and automatically replaces it with a secure password hash after the first successful PIN verification.
+
+Test flow:
+1. Add products to cart.
+2. Go to Checkout.
+3. Choose Delivery or Pickup and fill details.
+4. Click Proceed to Payment.
+5. Enter HP10001 and PIN 1234.
+6. Payment is deducted from bank_accounts.
+7. Check bank_transactions in phpMyAdmin.
+8. Check orders.payment_status and orders.transaction_id.
+9. Open Transaction History from the website.

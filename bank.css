@@ -1,0 +1,27 @@
+:root{--bank-ink:#3b261c;--bank-muted:#78675f;--bank-border:#eadfd8;--bank-primary:#e45d3f;--bank-primary-dark:#c84d31;--bank-soft:#fff6f1}
+.bank-page{margin:0;background:#fff8f3;color:var(--bank-ink);font-family:Arial,sans-serif;min-height:100vh}
+.bank-shell{min-height:100vh;display:grid;place-items:center;padding:32px 18px}
+.bank-card{width:min(520px,100%);background:#fff;border:1px solid var(--bank-border);border-radius:22px;padding:30px;box-shadow:0 18px 50px rgba(59,38,28,.10)}
+.bank-back{display:inline-block;color:var(--bank-muted);text-decoration:none;font-weight:700;margin-bottom:18px}
+.bank-logo{width:64px;height:64px;display:grid;place-items:center;margin:0 auto 8px;border-radius:18px;background:var(--bank-soft);font-size:34px}
+.bank-brand{text-align:center;color:var(--bank-primary);font-weight:900;font-size:14px;text-transform:uppercase;letter-spacing:.08em}
+.bank-card h1{text-align:center;font-family:"Times New Roman",serif;font-size:34px;margin:8px 0 6px}
+.bank-subtitle{text-align:center;color:var(--bank-muted);line-height:1.55;margin:0 0 22px}
+.amount-box{background:var(--bank-soft);border:1px solid #f5d7cc;border-radius:16px;text-align:center;padding:20px;margin-bottom:22px}
+.amount-box span,.amount-box small{display:block;color:var(--bank-muted)}
+.amount-box strong{display:block;color:var(--bank-primary);font-size:34px;margin:7px 0}
+.bank-field{display:flex;flex-direction:column;gap:7px;margin-bottom:16px}
+.bank-field label{font-weight:800}
+.bank-field input{height:48px;border:1px solid #d9cbc4;border-radius:10px;padding:0 13px;font:inherit;outline:none}
+.bank-field input:focus{border-color:var(--bank-primary);box-shadow:0 0 0 3px rgba(228,93,63,.10)}
+.bank-field small{color:var(--bank-muted);font-size:12px}
+.bank-pay-button{width:100%;height:50px;border:0;border-radius:11px;background:var(--bank-primary);color:#fff;font-weight:900;font-size:16px;cursor:pointer;margin-top:5px}
+.bank-pay-button:hover{background:var(--bank-primary-dark)}
+.bank-security{text-align:center;color:var(--bank-muted);font-size:12px;margin-top:16px}
+.digital-payment-card{display:grid;grid-template-columns:auto 1fr auto;gap:14px;align-items:center;padding:18px;border:2px solid var(--bank-primary);background:var(--bank-soft);border-radius:14px}
+.digital-payment-icon{font-size:30px}.digital-payment-card strong{display:block;margin-bottom:4px}.digital-payment-card small{display:block;color:var(--bank-muted);line-height:1.45}.payment-badge{font-size:11px;font-weight:900;color:var(--bank-primary);background:#fff;border:1px solid #f3c7b8;padding:7px 9px;border-radius:999px;white-space:nowrap}
+.transaction-panel{padding:24px}.transaction-table-wrap{overflow-x:auto}.transaction-table{width:100%;border-collapse:collapse;min-width:900px}.transaction-table th,.transaction-table td{text-align:left;padding:13px 12px;border-bottom:1px solid var(--bank-border);white-space:nowrap}.transaction-table th{background:#fff8f3;font-size:13px}.tx-status{display:inline-block;padding:5px 9px;border-radius:999px;font-size:12px;font-weight:900}.tx-status.ok{background:#eff9ee;color:#31712c}.tx-status.bad{background:#fff0ed;color:#9c3a28}.transaction-empty{text-align:center;padding:40px;color:var(--bank-muted)}
+.payment-success-card{max-width:620px;margin:70px auto}.success-details{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:22px 0;text-align:left}.success-details>div{padding:14px;border:1px solid var(--bank-border);border-radius:12px;background:#fffaf7}.success-details span{display:block;color:var(--bank-muted);font-size:12px;margin-bottom:5px}.success-details strong{display:block}
+@media(max-width:650px){.bank-card{padding:22px}.digital-payment-card{grid-template-columns:auto 1fr}.payment-badge{grid-column:1/-1;width:max-content}.success-details{grid-template-columns:1fr}}
+
+.bank-flow-note{margin:16px 0 22px;padding:14px 16px;border:1px solid #eadfd8;border-radius:12px;background:#fff8f3;color:#5b4034;line-height:1.5}.bank-flow-note code{font-weight:700}.bank-field small{display:block;margin-top:7px;color:#806a61;line-height:1.4}

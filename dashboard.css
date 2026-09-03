@@ -974,40 +974,53 @@ img {
     color:#ffffff;
 }
 
+/* Wishlist card buttons: compact and aligned like the product card actions */
 .wishlist-card-actions{
     display:flex;
     align-items:center;
     gap:10px;
     margin-top:auto;
+    flex-wrap:nowrap;
 }
 .remove-wishlist,
 .wishlist-checkout{
+    height:50px;
+    min-height:50px;
     display:inline-flex;
     align-items:center;
     justify-content:center;
-    min-height:42px;
-    padding:0 16px;
     border-radius:10px;
     font-family:"Times New Roman",Times,serif;
-    font-size:15px;
     font-weight:700;
     text-decoration:none;
-    transition:background-color .2s ease,color .2s ease,transform .2s ease;
+    box-sizing:border-box;
+    transition:background-color .2s ease,color .2s ease,transform .2s ease,border-color .2s ease;
 }
 .remove-wishlist{
+    flex:0 0 52px;
+    width:52px;
+    min-width:52px;
+    padding:0;
     border:1px solid var(--primary);
     background:var(--white);
     color:var(--primary);
+    font-size:22px;
+    line-height:1;
 }
 .remove-wishlist:hover{
     background:#fff1e9;
     color:var(--primary-dark);
+    border-color:var(--primary-dark);
     transform:translateY(-1px);
 }
 .wishlist-checkout{
+    min-width:128px;
+    padding:0 20px;
     border:1px solid var(--primary);
     background:var(--primary);
     color:var(--white);
+    font-size:16px;
+    white-space:nowrap;
 }
 .wishlist-checkout:hover{
     background:var(--primary-dark);
@@ -1048,4 +1061,136 @@ img {
 }
 .wishlist-cart-icon{
     filter:grayscale(1) brightness(0);
-}.wishlist-cart-form{margin:0}.wishlist-cart-form .wishlist-checkout{cursor:pointer;font:inherit;font-weight:700}.cart-header-count{font-weight:700}
+}
+.wishlist-cart-form{
+    margin:0;
+    display:flex;
+    align-items:center;
+    gap:10px;
+    flex-wrap:nowrap;
+}
+.wishlist-cart-form .wishlist-checkout{
+    cursor:pointer;
+}
+/* Same checkout tick style used on Featured/Products cards */
+.wishlist-direct-checkout{
+    flex:0 0 48px;
+    width:48px;
+    min-width:48px;
+    height:50px;
+    padding:0;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    border:2px solid #3b261c;
+    border-radius:7px;
+    background:#fff;
+    color:#3b261c;
+    font-family:"Times New Roman",Times,serif;
+    font-size:24px;
+    font-weight:700;
+    line-height:1;
+    cursor:pointer;
+    white-space:nowrap;
+    box-sizing:border-box;
+}
+.wishlist-direct-checkout:hover{
+    background:#fff7f2;
+    border-color:var(--primary);
+    color:var(--primary);
+}
+.wishlist-direct-checkout:disabled{
+    opacity:.7;
+    cursor:wait;
+}
+.cart-header-count{font-weight:700}
+
+
+
+/* Small Buy Now button beside Add to Cart */
+.product-actions{
+    flex-wrap:nowrap !important;
+}
+.product-actions .checkout-button{
+    flex:0 0 48px;
+    width:48px;
+    min-width:48px;
+    height:50px;
+    padding:0;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    border:2px solid #3b261c;
+    border-radius:7px;
+    background:#fff;
+    color:#3b261c;
+    font-size:24px;
+    font-weight:700;
+    line-height:1;
+    cursor:pointer;
+    white-space:nowrap;
+}
+.product-actions .checkout-button:hover{
+    background:#fff7f2;
+    border-color:var(--primary);
+    color:var(--primary);
+}
+.product-actions .checkout-button:disabled{
+    opacity:.7;
+    cursor:wait;
+}
+
+
+/* Final wishlist/product action polish */
+.remove-wishlist{
+    background:#fff !important;
+    border:1.5px solid #3b261c !important;
+    color:#3b261c !important;
+}
+.remove-wishlist .trash-icon{
+    width:25px;
+    height:25px;
+    fill:none;
+    stroke:currentColor;
+    stroke-width:1.9;
+    stroke-linecap:round;
+    stroke-linejoin:round;
+}
+.remove-wishlist:hover{
+    background:#fff7f2 !important;
+    border-color:var(--primary) !important;
+    color:var(--primary) !important;
+}
+/* Keep every direct-checkout tick white, including Featured Products */
+.product-actions .checkout-button,
+.wishlist-card-actions .wishlist-direct-checkout{
+    background:#fff !important;
+    color:#3b261c !important;
+    border:2px solid #3b261c !important;
+    border-radius:7px !important;
+}
+.product-actions .checkout-button:hover,
+.wishlist-card-actions .wishlist-direct-checkout:hover{
+    background:#fff7f2 !important;
+    color:var(--primary) !important;
+    border-color:var(--primary) !important;
+}
+
+/* Contact form feedback */
+.contact-alert {
+    margin-bottom: 14px;
+    padding: 12px 14px;
+    border-radius: 10px;
+    font-weight: 700;
+    line-height: 1.4;
+}
+.contact-alert.success {
+    color: #245c35;
+    background: #edf8ef;
+    border: 1px solid #cce9d2;
+}
+.contact-alert.error {
+    color: #9c3828;
+    background: #fff1ed;
+    border: 1px solid #f0c8bd;
+}

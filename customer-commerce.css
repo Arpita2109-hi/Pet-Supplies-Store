@@ -511,3 +511,20 @@ body {
         grid-column: auto;
     }
 }
+
+/* HAPPY PAWS DIGITAL PAYMENT ADDITIONS */
+.digital-payment-card{display:grid;grid-template-columns:auto 1fr auto;gap:14px;align-items:center;padding:18px;border:2px solid var(--primary);background:#fff6f1;border-radius:14px}
+.digital-payment-icon{font-size:30px}.digital-payment-card strong{display:block;margin-bottom:4px}.digital-payment-card small{display:block;color:var(--muted);line-height:1.45}.payment-badge{font-size:11px;font-weight:900;color:var(--primary);background:#fff;border:1px solid #f3c7b8;padding:7px 9px;border-radius:999px;white-space:nowrap}
+@media(max-width:650px){.digital-payment-card{grid-template-columns:auto 1fr}.payment-badge{grid-column:1/-1;width:max-content}}
+
+.payment-note{font-size:.9rem;line-height:1.45;color:#78675f;margin:12px 0;}
+
+/* Store pickup contact section fix */
+.delivery-only-fields {
+    margin-top: 16px;
+}
+.pickup-contact-note {
+    margin: 14px 0 0;
+    color: var(--muted);
+    font-size: 14px;
+}

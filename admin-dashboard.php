@@ -14,6 +14,8 @@ $productCount = 0;
 $featuredCount = 0;
 $orderCount = 0;
 $pendingCount = 0;
+$messageCount = 0;
+$unreadMessageCount = 0;
 
 $result = mysqli_query(
     $conn,
@@ -53,6 +55,26 @@ $result = mysqli_query(
 
 if ($result) {
     $pendingCount = mysqli_fetch_assoc($result)["total"];
+}
+
+
+mysqli_query($conn, "CREATE TABLE IF NOT EXISTS contact_messages (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NULL,
+    name VARCHAR(100) NOT NULL,
+    email VARCHAR(150) NOT NULL,
+    message TEXT NOT NULL,
+    status VARCHAR(20) NOT NULL DEFAULT 'unread',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
+
+$result = mysqli_query($conn, "SELECT COUNT(*) AS total FROM contact_messages");
+if ($result) {
+    $messageCount = (int)mysqli_fetch_assoc($result)["total"];
+}
+$result = mysqli_query($conn, "SELECT COUNT(*) AS total FROM contact_messages WHERE status = 'unread'");
+if ($result) {
+    $unreadMessageCount = (int)mysqli_fetch_assoc($result)["total"];
 }
 
 $adminName = htmlspecialchars(
@@ -139,6 +161,11 @@ include "admin-header.php";
                 Orders
             </a>
 
+            <a href="admin-messages.php">
+                <span>✉</span>
+                Messages<?php if ($unreadMessageCount > 0): ?> (<?php echo $unreadMessageCount; ?>)<?php endif; ?>
+            </a>
+
             <a href="dashboard.php?preview=1">
                 <span>◉</span>
                 View Storefront
@@ -213,6 +240,20 @@ include "admin-header.php";
 
             </article>
 
+            <article class="card">
+
+                <h3>Contact Messages</h3>
+
+                <strong>
+                    <?php echo (int) $messageCount; ?>
+                </strong>
+
+                <p>
+                    <?php echo (int) $unreadMessageCount; ?> unread customer message(s).
+                </p>
+
+            </article>
+
         </section>
 
         <section class="manage-section">
@@ -259,6 +300,15 @@ include "admin-header.php";
 
                 </div>
 
+            </article>
+
+            <article class="manage-card">
+                <span class="manage-icon">✉</span>
+                <div>
+                    <h2>Customer Messages</h2>
+                    <p>Read, mark as read and delete Contact Us messages.</p>
+                    <a href="admin-messages.php">Open Messages</a>
+                </div>
             </article>
 
         </section>

@@ -1,0 +1,28 @@
+@import url("https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@700&display=swap");
+*{box-sizing:border-box}
+body{margin:0;background:#fffaf7;color:#3b261c;font-family:"DM Sans",sans-serif}
+.messages-page{width:min(1500px,92%);margin:42px auto 70px}
+.messages-heading{display:flex;justify-content:space-between;align-items:end;margin-bottom:22px}
+.eyebrow{display:inline-block;padding:8px 14px;border-radius:999px;background:#edf8ef;color:#35633d;font-size:12px;font-weight:700;letter-spacing:1.6px}
+.messages-heading h2{font-family:"Playfair Display",serif;font-size:42px;margin:10px 0 5px}
+.messages-heading p{margin:0;color:#7d685d}
+.messages-card{background:#fff;border:1px solid #ead8cf;border-radius:20px;box-shadow:0 12px 30px rgba(74,45,32,.08);padding:24px}
+.table-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;min-width:1050px}
+th,td{text-align:left;padding:16px 14px;border-bottom:1px solid #eee0d8;vertical-align:top}
+th{background:#fff6f1;font-size:13px;color:#5a3c2e}
+.unread-row{background:#fffdf6}
+.message-text{max-width:390px;min-width:280px;line-height:1.55;color:#6f5c52}
+td a{color:#d94e31;text-decoration:none}
+.status{display:inline-block;padding:6px 11px;border-radius:999px;font-size:12px;font-weight:700}
+.status.unread{background:#fff0e9;color:#c84d31}
+.status.read{background:#edf8ef;color:#2f6a3d}
+.actions{display:flex;gap:8px;flex-wrap:wrap}
+.actions form{margin:0}
+.actions button{border:0;border-radius:8px;padding:9px 11px;font-weight:700;cursor:pointer;white-space:nowrap}
+.read-btn{background:#e95d3f;color:#fff}
+.read-btn.secondary{background:#f3eee9;color:#5c4438}
+.delete-btn{background:#fff;border:1px solid #e95d3f!important;color:#d94e31}
+.empty-state{text-align:center;padding:70px 20px;color:#7d685d}
+.empty-icon{font-size:48px}.empty-state h3{font-size:24px;color:#3b261c;margin:12px 0 6px}
+@media(max-width:700px){.messages-page{width:95%;margin-top:24px}.messages-heading h2{font-size:34px}.messages-card{padding:12px}}

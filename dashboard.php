@@ -15,6 +15,59 @@ if(($_SESSION["role"]??"")==="admin"&&!$isAdminPreview){
     exit();
 }
 $userId=(int)$_SESSION["user_id"];
+
+// Contact messages table and form handling.
+// CREATE TABLE IF NOT EXISTS keeps the feature working even on an existing project database.
+mysqli_query($conn, "CREATE TABLE IF NOT EXISTS contact_messages (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NULL,
+    name VARCHAR(100) NOT NULL,
+    email VARCHAR(150) NOT NULL,
+    message TEXT NOT NULL,
+    status VARCHAR(20) NOT NULL DEFAULT 'unread',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    INDEX idx_contact_user (user_id),
+    INDEX idx_contact_status (status)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
+
+$contactSuccess = '';
+$contactError = '';
+$contactName = $_SESSION['name'] ?? '';
+$contactEmail = $_SESSION['email'] ?? '';
+$contactMessage = '';
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['send_message']) && !$isAdminPreview) {
+    $contactName = trim($_POST['contact_name'] ?? '');
+    $contactEmail = trim($_POST['contact_email'] ?? '');
+    $contactMessage = trim($_POST['contact_message'] ?? '');
+
+    if ($contactName === '' || $contactEmail === '' || $contactMessage === '') {
+        $contactError = 'Please fill in all fields.';
+    } elseif (!filter_var($contactEmail, FILTER_VALIDATE_EMAIL)) {
+        $contactError = 'Please enter a valid email address.';
+    } elseif (strlen($contactName) > 100 || strlen($contactEmail) > 150) {
+        $contactError = 'Name or email is too long.';
+    } else {
+        $contactStmt = mysqli_prepare(
+            $conn,
+            "INSERT INTO contact_messages (user_id, name, email, message) VALUES (?, ?, ?, ?)"
+        );
+
+        if ($contactStmt) {
+            mysqli_stmt_bind_param($contactStmt, 'isss', $userId, $contactName, $contactEmail, $contactMessage);
+
+            if (mysqli_stmt_execute($contactStmt)) {
+                $contactSuccess = 'Your message has been sent successfully.';
+                $contactMessage = '';
+            } else {
+                $contactError = 'Unable to send your message. Please try again.';
+            }
+            mysqli_stmt_close($contactStmt);
+        } else {
+            $contactError = 'Unable to send your message. Please try again.';
+        }
+    }
+}
 $search=trim($_GET["search"]??"");
 if(($_SESSION["role"]??"")==="admin"&&!$isAdminPreview){
     header("Location: admin-dashboard.php");
@@ -156,6 +209,8 @@ function productCard(array $product,string $prefix="product",array $wishlistIds=
        <?php endif; ?>
 
     <button type="button" class="cart-button" data-product-id="<?= $id ?>" data-quantity-id="<?= $prefix ?>_quantity_<?= $id ?>">Add to Cart</button>
+
+    <button type="button" class="checkout-button" data-product-id="<?= $id ?>" data-quantity-id="<?= $prefix ?>_quantity_<?= $id ?>" title="Checkout" aria-label="Checkout">✓</button>
 </div>
     </div>
 </article>
@@ -217,6 +272,9 @@ function productCard(array $product,string $prefix="product",array $wishlistIds=
             <?php endif; ?>
             <a href="<?= $isAdminPreview?'#':'cart.php' ?>" class="cart-link">Cart<?php if(!$isAdminPreview): ?> (<span class="cart-header-count"><?= $cartItemCount ?></span>)<?php endif; ?></a>
             <a href="<?= $isAdminPreview?'#':'checkout.php' ?>" class="checkout-link">Checkout</a>
+            <?php if(!$isAdminPreview): ?>
+                <a href="transaction_history.php" class="transaction-link">My Purchases</a>
+            <?php endif; ?>
         </nav>
     </div>
 
@@ -447,7 +505,19 @@ function productCard(array $product,string $prefix="product",array $wishlistIds=
                 </div>
             </div>
 
-            <form class="contact-form">
+            <form class="contact-form" method="post" action="dashboard.php#contact">
+                <?php if($contactSuccess !== ''): ?>
+                    <div class="contact-alert success" role="status">
+                        <?= htmlspecialchars($contactSuccess) ?>
+                    </div>
+                <?php endif; ?>
+
+                <?php if($contactError !== ''): ?>
+                    <div class="contact-alert error" role="alert">
+                        <?= htmlspecialchars($contactError) ?>
+                    </div>
+                <?php endif; ?>
+
                 <label for="contact_name">
                     Your Name
                 </label>
@@ -455,7 +525,11 @@ function productCard(array $product,string $prefix="product",array $wishlistIds=
                 <input
                     type="text"
                     id="contact_name"
+                    name="contact_name"
+                    maxlength="100"
+                    value="<?= htmlspecialchars($contactName) ?>"
                     placeholder="Enter your name"
+                    required
                 >
 
                 <label for="contact_email">
@@ -465,7 +539,11 @@ function productCard(array $product,string $prefix="product",array $wishlistIds=
                 <input
                     type="email"
                     id="contact_email"
+                    name="contact_email"
+                    maxlength="150"
+                    value="<?= htmlspecialchars($contactEmail) ?>"
                     placeholder="Enter your email"
+                    required
                 >
 
                 <label for="contact_message">
@@ -474,11 +552,13 @@ function productCard(array $product,string $prefix="product",array $wishlistIds=
 
                 <textarea
                     id="contact_message"
+                    name="contact_message"
                     rows="5"
                     placeholder="How can we help you?"
-                ></textarea>
+                    required
+                ><?= htmlspecialchars($contactMessage) ?></textarea>
 
-                <button type="button">
+                <button type="submit" name="send_message" value="1">
                     Send Message
                 </button>
             </form>
@@ -500,6 +580,44 @@ function productCard(array $product,string $prefix="product",array $wishlistIds=
 <script>
 document.addEventListener("click",function(e){
    const cartButton=e.target.closest(".cart-button");
+
+const checkoutButton=e.target.closest(".checkout-button");
+
+if(checkoutButton){
+    const quantityInput=document.getElementById(checkoutButton.dataset.quantityId);
+    const quantity=Math.max(1,parseInt(quantityInput?.value||"1",10));
+
+    checkoutButton.disabled=true;
+    checkoutButton.textContent="…";
+
+    fetch("cart_action.php",{
+        method:"POST",
+        headers:{
+            "Content-Type":"application/x-www-form-urlencoded"
+        },
+        body:
+            "action=add"+
+            "&product_id="+encodeURIComponent(checkoutButton.dataset.productId)+
+            "&quantity="+encodeURIComponent(quantity)+
+            "&ajax=1"
+    })
+    .then(response=>response.json())
+    .then(data=>{
+        if(data.success){
+            window.location.href="checkout.php";
+        }else{
+            checkoutButton.disabled=false;
+            checkoutButton.textContent="✓";
+        }
+    })
+    .catch(()=>{
+        checkoutButton.disabled=false;
+        checkoutButton.textContent="✓";
+        alert("Unable to continue to checkout. Please try again.");
+    });
+
+    return;
+}
 
 if(cartButton){
     const quantityInput=document.getElementById(cartButton.dataset.quantityId);

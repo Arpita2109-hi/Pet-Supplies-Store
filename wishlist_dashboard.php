@@ -54,6 +54,7 @@ Wishlist (<span class="wishlist-count"><?= $wishlistCount ?></span>)
 </a>
 <a href="cart.php" class="cart-link">Cart (<span class="cart-header-count"><?= $cartItemCount ?></span>)</a>
 <a href="checkout.php" class="checkout-link">Checkout</a>
+<a href="transaction_history.php" class="transaction-link">My Purchases</a>
 </nav>
 
 </div>
@@ -120,8 +121,13 @@ Rs. <?= number_format((float)$product["price"],2) ?>
 
 <div class="wishlist-card-actions">
 
-<a href="wishlist_dashboard.php?remove=<?= $product["id"] ?>" class="remove-wishlist">
-Remove from Wishlist
+<a href="wishlist_dashboard.php?remove=<?= $product["id"] ?>" class="remove-wishlist" title="Remove from Wishlist" aria-label="Remove from Wishlist">
+    <svg class="trash-icon" viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M8 7V5.5C8 4.67 8.67 4 9.5 4h5c.83 0 1.5.67 1.5 1.5V7"/>
+        <path d="M5 7h14"/>
+        <path d="M6.5 7l.8 12a2 2 0 0 0 2 1.87h5.4a2 2 0 0 0 2-1.87l.8-12"/>
+        <path d="M10 10v7M14 10v7"/>
+    </svg>
 </a>
 
 <form class="wishlist-cart-form">
@@ -136,10 +142,15 @@ Remove from Wishlist
     type="submit"
     class="wishlist-checkout"
 >
-
     Add to Cart
-
 </button>
+
+<button
+    type="button"
+    class="wishlist-direct-checkout"
+    title="Checkout"
+    aria-label="Checkout"
+>✓</button>
 
 </form>
 </div>
@@ -169,86 +180,63 @@ Remove from Wishlist
 </main>
 <script>
 
-document.querySelectorAll(".wishlist-cart-form").forEach(function(form) {
+function addWishlistProductToCart(form, button, goToCheckout) {
+    const productId = form.querySelector('input[name="product_id"]').value;
+    const originalText = button.innerHTML;
 
-    form.addEventListener("submit", function(e) {
+    button.disabled = true;
+    if (goToCheckout) button.innerHTML = "…";
 
-        e.preventDefault();
+    fetch("cart_action.php", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/x-www-form-urlencoded"
+        },
+        body:
+            "action=add" +
+            "&product_id=" + encodeURIComponent(productId) +
+            "&quantity=1" +
+            "&ajax=1"
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (!data.success) {
+            throw new Error(data.message || "Could not add product to cart.");
+        }
 
-        const button = form.querySelector(".wishlist-checkout");
+        const cartCount = document.querySelector(".cart-header-count");
+        if (cartCount) cartCount.textContent = data.cartCount;
 
-        const productId = form.querySelector(
-            'input[name="product_id"]'
-        ).value;
+        if (goToCheckout) {
+            window.location.href = "checkout.php";
+            return;
+        }
 
-
-        button.disabled = true;
-
-
-        fetch("cart_action.php", {
-
-            method: "POST",
-
-            headers: {
-                "Content-Type": "application/x-www-form-urlencoded"
-            },
-
-            body:
-                "action=add" +
-                "&product_id=" + encodeURIComponent(productId) +
-                "&quantity=1" +
-                "&ajax=1"
-
-        })
-
-        .then(response => response.json())
-
-        .then(data => {
-
-            if (data.success) {
-
-                const cartCount = document.querySelector(
-                    ".cart-header-count"
-                );
-
-
-                if (cartCount) {
-
-                    cartCount.textContent = data.cartCount;
-
-                }
-
-
-                const oldText = button.innerHTML;
-
-
-                button.innerHTML = "✓ Added to Cart";
-
-
-                setTimeout(function() {
-
-                    button.innerHTML = oldText;
-
-                }, 1200);
-
-            }
-
-        })
-
-        .catch(function(error) {
-
-            console.error("Cart error:", error);
-
-        })
-
-        .finally(function() {
-
+        button.innerHTML = "✓ Added to Cart";
+        setTimeout(function() {
+            button.innerHTML = originalText;
             button.disabled = false;
+        }, 1200);
+    })
+    .catch(function(error) {
+        console.error("Cart error:", error);
+        button.innerHTML = originalText;
+        button.disabled = false;
+        alert("Unable to continue. Please try again.");
+    });
+}
 
-        });
-
+document.querySelectorAll(".wishlist-cart-form").forEach(function(form) {
+    form.addEventListener("submit", function(e) {
+        e.preventDefault();
+        const button = form.querySelector(".wishlist-checkout");
+        addWishlistProductToCart(form, button, false);
     });
 
+    const checkoutButton = form.querySelector(".wishlist-direct-checkout");
+    checkoutButton.addEventListener("click", function() {
+        addWishlistProductToCart(form, checkoutButton, true);
+    });
 });
 
 </script>
